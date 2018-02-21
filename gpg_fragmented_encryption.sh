@@ -3,6 +3,7 @@
 
 # Default settings
 folder=
+output_folder=./output_gpgfe
 
 # Internal variables
 prog=${0##*/}
@@ -11,16 +12,17 @@ function usage(){
 	cat <<END_USAGE
 Encrypts all the files in the thunderbird-folder with GnuPG.
 
-Usage: $prog recipient [options...]
+Usage: $prog recipient input [options...]
 
 Arguments:
-    recipient        The key-ID or mail adress of the one which should encrypt
-                     the folder (normally just you)
+    recipient       The key-ID or mail adress of the one which should encrypt
+                    the folder (normally just you)
+    input           The input folder which filed should be encrypted
 
 Options:
-    -h, --help       Prints this help message
-    -p, --path       The path to the thunderbird profile directory
-                     (usually and default: '~/.thunderbird')
+    -h, --help      Prints this help message
+    -o, --output    Specify output folder.
+                    Default: ./output_gpgfe/
 
 For bugs, feature requests or questions: mail@hauke-stieler.de
 END_USAGE
@@ -33,12 +35,12 @@ do
 		usage
 		exit 0
 		;;
-	-p)
-		echo "$2"
+	-o)
+		output_folder="$2"
 		shift
 		;;
-	--path=*)
-		folder="${1#*=}"
+	--output=*)
+		output_folder="${1#*=}"
 		shift
 		;;
 	*)
@@ -55,5 +57,6 @@ then
 fi
 
 echo "Folder to encrypt: $folder"
+echo "Output folder:     $output_folder"
 
 #find $thunderbird_folder | while read line; do print_file $line; done
