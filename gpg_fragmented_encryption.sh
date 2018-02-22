@@ -13,7 +13,7 @@ encrypt_mode=true
 
 function usage(){
 	cat <<END_USAGE
-Encrypts all the files in the thunderbird-folder with GnuPG.
+Encrypts or decrypts all the files in the thunderbird-folder with GnuPG.
 
 Usage: $prog recipient input [options...]
 
@@ -27,7 +27,8 @@ Options:
     -o, --output    Specify output folder
                     default: ./output_gpgfe
     -d, --decrypt   Decrypts the given input folder and puts the decrypted
-                    files into the output folder
+                    files into the output folder. Not specifying this option
+                    will encrypt instead of decrypt
 
 For bugs, feature requests or questions: mail@hauke-stieler.de
 END_USAGE
@@ -125,7 +126,7 @@ echo ""
 echo "If the output folder already exists, the application will abort"
 echo ""
 echo "Do you want to proceed? [y/n]"
-read -n 1 -s ok
+read -n 1 -s ok # read just one char and don't echo it on the screen
 
 if [ $ok == "y" ]
 then
@@ -135,7 +136,6 @@ then
 	then
 		find $folder -type f | while read line; do encrypt $line; done
 	else
-		# TODO check if folder exists
 		find $folder -type f | while read line; do decrypt $line; done
 	fi
 else
