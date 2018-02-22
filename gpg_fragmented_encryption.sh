@@ -114,17 +114,30 @@ do
 done
 
 echo "Recipient:         $recipient"
-echo "Folder to encrypt: $folder"
-echo "Output folder:     $output_folder"
-
-# TODO ask if these settings are ok
-
-mkdir $output_folder
-
 if [ $encrypt_mode = true ]
 then
-	find $folder -type f | while read line; do encrypt $line; done
+	echo "Folder to encrypt: $folder"
 else
-	# TODO check if folder exists
-	find $folder -type f | while read line; do decrypt $line; done
+	echo "Folder to decrypt: $folder"
+fi
+echo "Output folder:     $output_folder"
+echo ""
+echo "If the output folder already exists, the application will abort"
+echo ""
+echo "Do you want to proceed? [y/n]"
+read -n 1 -s ok
+
+if [ $ok == "y" ]
+then
+	mkdir $output_folder
+
+	if [ $encrypt_mode = true ]
+	then
+		find $folder -type f | while read line; do encrypt $line; done
+	else
+		# TODO check if folder exists
+		find $folder -type f | while read line; do decrypt $line; done
+	fi
+else
+	echo "Nothing as been done so far."
 fi
