@@ -8,7 +8,7 @@ This script turn this folder
 ├── folder
 │   ├── b.txt
 │   └── c.txt
-├── another_folder
+└── another_folder
     └── d.txt
 ```
 by using the command `sh gpg_fragmented_encryption.sh foo@bar.org ./test` into this fragmented encrypted folder:
@@ -18,7 +18,7 @@ by using the command `sh gpg_fragmented_encryption.sh foo@bar.org ./test` into t
 ├── folder
 │   ├── b.txt.gpg
 │   └── c.txt.gpg
-├── another_folder
+└── another_folder
     └── d.txt.gpg
 ```
 
