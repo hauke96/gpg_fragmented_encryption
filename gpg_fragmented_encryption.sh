@@ -13,7 +13,7 @@ encrypt_mode=true
 
 function usage(){
 	cat <<END_USAGE
-Encrypts or decrypts all the files in the thunderbird-folder with GnuPG.
+Encrypts or decrypts all the files in a folder with GnuPG.
 
 Usage: $prog recipient input [options...]
 
