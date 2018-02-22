@@ -30,6 +30,30 @@ For bugs, feature requests or questions: mail@hauke-stieler.de
 END_USAGE
 }
 
+case $1 in
+-h|--help)
+	usage
+	exit 0
+	;;
+esac
+
+# Arguments:
+#    $1 - Filename to encrypt
+function encrypt(){
+	output_file="$output_folder/${1#*/}.gpg"
+
+	# actually the output-file without the file
+	# e.g.: /test/foo/bar.txt if the file, then /test/foo is the sub-folder
+	output_sub_folder=${output_file%/*}
+
+	echo "file : $1"
+	echo "       $output_file"
+	echo "       $output_sub_folder"
+
+	mkdir -p $output_sub_folder
+	gpg --output $output_file --encrypt --recipient $recipient $1 2>/dev/null >/dev/null
+}
+
 # Check if recipient is provided
 recipient=$1
 if [ -z $recipient ]
@@ -39,7 +63,7 @@ then
 fi
 
 # Check if folder is provided
-folder=$2
+folder=${2#*./}
 if [ -z $folder ]
 then
 	echo "Provide an input folder as second argument"
@@ -71,4 +95,6 @@ echo "Recipient:         $recipient"
 echo "Folder to encrypt: $folder"
 echo "Output folder:     $output_folder"
 
-#find $thunderbird_folder | while read line; do print_file $line; done
+mkdir $output_folder
+
+find $folder -type f | while read line; do encrypt $line; done
