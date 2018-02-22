@@ -45,22 +45,25 @@ fi
 # Arguments:
 #    $1 - Filename to encrypt
 function encrypt(){
-	output_file="$output_folder/${1#*/}.gpg"
+	input_file="$@"
+	output_file="$output_folder/${input_file#*$folder}.gpg"
 
 	# actually the output-file without the file
 	# e.g.: /test/foo/bar.txt if the file, then /test/foo is the sub-folder
-	output_sub_folder=${output_file%/*}
+	output_sub_folder="${output_file%/*}"
 
 	echo $output_file
+	echo $input_file
 
-	mkdir -p $output_sub_folder
-	gpg --output $output_file --encrypt --recipient $recipient $1 2>/dev/null 1>/dev/null
+	mkdir -p "$output_sub_folder"
+	gpg --output "$output_file" --encrypt --recipient $recipient "$input_file" >/dev/null
 }
 
 # Arguments:
 #    $1 - Filename to decrypt
 function decrypt(){
-	file_without_gpg_ending=${1%.*}
+	input_file="$@"
+	file_without_gpg_ending=${input_file%.*}
 	output_file="$output_folder/${file_without_gpg_ending#*/}"
 
 	# actually the output-file without the file
@@ -69,8 +72,8 @@ function decrypt(){
 
 	echo $output_file
 
-	mkdir -p $output_sub_folder
-	gpg --batch --output $output_file --decrypt $1 2>/dev/null 1>/dev/null
+	mkdir -p "$output_sub_folder"
+	gpg --batch --output "$output_file" --decrypt "$input_file" >/dev/null
 }
 
 # Check if recipient is provided
@@ -102,8 +105,8 @@ do
 		output_folder=${arg_j#*./}
 		;;
 	--output=*)
-		output_folder=${arg_i#*=}
 		output_folder=${output_folder#*./}
+		output_folder=${arg_i#*=}
 		;;
 	-d|--decrypt)
 		encrypt_mode=false
