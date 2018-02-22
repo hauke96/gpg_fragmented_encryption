@@ -5,10 +5,11 @@ set -e
 # Default settings
 recipient=
 folder=
-output_folder=./output_gpgfe
+output_folder=output_gpgfe
 
 # Internal variables
 prog=${0##*/}
+encrypt_mode=true
 
 function usage(){
 	cat <<END_USAGE
@@ -46,12 +47,26 @@ function encrypt(){
 	# e.g.: /test/foo/bar.txt if the file, then /test/foo is the sub-folder
 	output_sub_folder=${output_file%/*}
 
-	echo "file : $1"
-	echo "       $output_file"
-	echo "       $output_sub_folder"
+	echo $output_file
 
 	mkdir -p $output_sub_folder
-	gpg --output $output_file --encrypt --recipient $recipient $1 2>/dev/null >/dev/null
+	gpg --output $output_file --encrypt --recipient $recipient $1 2>/dev/null 1>/dev/null
+}
+
+# Arguments:
+#    $1 - Filename to decrypt
+function decrypt(){
+	file_without_gpg_ending=${1%.*}
+	output_file="$output_folder/${file_without_gpg_ending#*/}"
+
+	# actually the output-file without the file
+	# e.g.: /test/foo/bar.txt if the file, then /test/foo is the sub-folder
+	output_sub_folder=${output_file%/*}
+
+	echo $output_file
+
+	mkdir -p $output_sub_folder
+	gpg --batch --output $output_file --decrypt $1 2>/dev/null 1>/dev/null
 }
 
 # Check if recipient is provided
@@ -80,10 +95,14 @@ do
 		exit 0
 		;;
 	-o)
-		output_folder="$arg_j"
+		output_folder=${arg_j#*./}
 		;;
 	--output=*)
-		output_folder="${arg_i#*=}"
+		output_folder=${arg_i#*=}
+		output_folder=${output_folder#*./}
+		;;
+	-d|--decrypt)
+		encrypt_mode=false
 		;;
 	*)
 		echo "Unknown argument number $i: '$arg_i'"
@@ -95,6 +114,14 @@ echo "Recipient:         $recipient"
 echo "Folder to encrypt: $folder"
 echo "Output folder:     $output_folder"
 
+# TODO ask if these settings are ok
+
 mkdir $output_folder
 
-find $folder -type f | while read line; do encrypt $line; done
+if [ $encrypt_mode = true ]
+then
+	find $folder -type f | while read line; do encrypt $line; done
+else
+	# TODO check if folder exists
+	find $folder -type f | while read line; do decrypt $line; done
+fi
