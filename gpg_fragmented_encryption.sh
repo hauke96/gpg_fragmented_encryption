@@ -20,23 +20,26 @@ Usage: $prog recipient input [options...]
 Arguments:
     recipient       The key-ID or mail adress of the one which should encrypt
                     the folder (normally just you)
-    input           The input folder which filed should be encrypted
+    input           Folder with files. This is used for de- and encryption
 
 Options:
     -h, --help      Prints this help message
-    -o, --output    Specify output folder.
-                    Default: ./output_gpgfe
+    -o, --output    Specify output folder
+                    default: ./output_gpgfe
+    -d, --decrypt   Decrypts the given input folder and puts the decrypted
+                    files into the output folder
 
 For bugs, feature requests or questions: mail@hauke-stieler.de
 END_USAGE
 }
 
-case $1 in
--h|--help)
+# When only the "-h" or "--help" given or it's the first argument, print help
+# message
+if [ $1 == "-h" ] || [ $1 == "--help" ]
+then
 	usage
 	exit 0
-	;;
-esac
+fi
 
 # Arguments:
 #    $1 - Filename to encrypt
