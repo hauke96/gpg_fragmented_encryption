@@ -9,38 +9,32 @@ output_folder=output_gpgfe
 
 # Internal variables
 prog=${0##*/}
-encrypt_mode=true
+encrypt_mode=
 
 function usage(){
 	cat <<END_USAGE
 Encrypts or decrypts all the files in a folder with GnuPG.
 
-Usage: $prog recipient input [options...]
-
-Arguments:
-    recipient       The key-ID or mail adress of the one which should encrypt
-                    the folder (normally just you)
-    input           Folder with files. This is used for de- and encryption
+Usage: $prog [options...]
 
 Options:
-    -h, --help      Prints this help message
-    -o, --output    Specify output folder
-                    default: ./output_gpgfe
-    -d, --decrypt   Decrypts the given input folder and puts the decrypted
-                    files into the output folder. Not specifying this option
-                    will encrypt instead of decrypt
+    -h, --help       Prints this help message
+    -e, --encrypt    Encrypt the given input folder and puts the encrypted
+                     files into the output folder. This command requires a
+                     specified recipient (s. below).
+    -d, --decrypt    Decrypts the given input folder and puts the decrypted
+                     files into the output folder.
+    -r, --recipient  The key-ID or mail adress of the one which should encrypt
+                     the folder (normally just you)
+    -i, --input      Folder with files. This is used for de- and encryption
+    -o, --output     Specify output folder. The default is ./output_gpgfe
+
+Usage of short Options: '-o value'
+Usage of long Options : '--option=value'
 
 For bugs, feature requests or questions: mail@hauke-stieler.de
 END_USAGE
 }
-
-# When only the "-h" or "--help" given or it's the first argument, print help
-# message
-if [ $1 == "-h" ] || [ $1 == "--help" ]
-then
-	usage
-	exit 0
-fi
 
 # Arguments:
 #    $1 - Filename to encrypt
@@ -76,23 +70,7 @@ function decrypt(){
 	gpg --batch --output "$output_file" --decrypt "$input_file" >/dev/null
 }
 
-# Check if recipient is provided
-recipient=$1
-if [ -z $recipient ]
-then
-	echo "Provide a recipient as first argument"
-	exit 1
-fi
-
-# Check if folder is provided
-folder=${2#*./}
-if [ -z $folder ]
-then
-	echo "Provide an input folder as second argument"
-	exit 1
-fi
-
-for (( i=3; i<=$#; i++ ))
+for (( i=1; i<=$#; i++ ))
 do
 	arg_i=${@:$i:1}   # get argument i
 	arg_j=${@:$i+1:1} # get argument i+1
@@ -103,13 +81,33 @@ do
 		;;
 	-o)
 		output_folder=${arg_j#*./}
+		shift
 		;;
 	--output=*)
 		output_folder=${output_folder#*./}
 		output_folder=${arg_i#*=}
 		;;
+	-r)
+		recipient=${arg_j#*./}
+		shift
+		;;
+	--recipient=*)
+		recipient=${recipient#*./}
+		recipient=${arg_i#*=}
+		;;
+	-i)
+		folder=${arg_j#*./}
+		shift
+		;;
+	--input=*)
+		folder=${folder#*./}
+		folder=${arg_i#*=}
+		;;
 	-d|--decrypt)
-		encrypt_mode=false
+		encrypt_mode=decrypt
+		;;
+	-e|--encrypt)
+		encrypt_mode=encrypt
 		;;
 	*)
 		echo "Unknown argument number $i: '$arg_i'"
@@ -117,8 +115,24 @@ do
 	esac
 done
 
+if [ -z $encrypt_mode ]
+then
+	cat <<END_USAGE
+Please specify endryption mode:
+
+	-e, --encrypt    Encrypt the given input folder and puts the encrypted
+					 files into the output folder. This command requires a
+					 specified recipient (s. below).
+	-d, --decrypt    Decrypts the given input folder and puts the decrypted
+					 files into the output folder.
+
+Use '-h' or '--help' for more information.
+END_USAGE
+exit 1
+fi
+
 echo "Recipient:         $recipient"
-if [ $encrypt_mode = true ]
+if [ $encrypt_mode == "encrypt" ]
 then
 	echo "Folder to encrypt: $folder"
 else
@@ -135,7 +149,7 @@ if [ $ok == "y" ]
 then
 	mkdir $output_folder
 
-	if [ $encrypt_mode = true ]
+	if [ $encrypt_mode == "encrypt" ]
 	then
 		find $folder -type f | while read line; do encrypt $line; done
 	else
