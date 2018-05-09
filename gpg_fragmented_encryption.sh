@@ -167,8 +167,18 @@ read -n 1 -s ok # read just one char and don't echo it on the screen
 if [ $ok == "y" ]
 then
 	echo "Okay, let's go"
-	echo "Create output folder"
-	mkdir $output_folder
+	echo "Try to create output folder"
+	folder_created=$(mkdir -p "$output_folder")
+
+	if [ ! $folder_created ]
+	then
+		echo "Creation of output folder failed"
+		if [ -n "$(ls -A $output_folder)" ]
+		then
+			echo "The output folder exists and is not empty. To not overwrite anything, existing non-empty folders are not allowed."
+			cancel_unchanged
+		fi
+	fi
 
 	if [ $encrypt_mode == "encrypt" ]
 	then
