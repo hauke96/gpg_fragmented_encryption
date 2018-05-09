@@ -200,6 +200,9 @@ then
 		echo "Start decrypting"
 		find $input_folder -type f | while read line; do decrypt $line; done
 	fi
+
+	echo ""
+	echo "Finished"
 else
 	echo "Okay, won't do anything"
 	cancel_unchanged
