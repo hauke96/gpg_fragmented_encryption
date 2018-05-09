@@ -70,8 +70,9 @@ function decrypt(){
 	# actually the output-file without the file
 	# e.g.: /test/foo/bar.txt if the file, then /test/foo is the sub-folder
 	output_sub_folder=${output_file%/*}
-
-	echo $output_file
+	
+	echo "in : $input_file"
+	echo "out: $output_file"
 
 	mkdir -p "$output_sub_folder"
 	gpg --batch --output "$output_file" --decrypt "$input_file" >/dev/null
