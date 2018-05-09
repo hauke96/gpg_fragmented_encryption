@@ -167,6 +167,17 @@ read -n 1 -s ok # read just one char and don't echo it on the screen
 if [ $ok == "y" ]
 then
 	echo "Okay, let's go"
+
+	# manage input folder
+	echo "Check input folder"
+	if [ ! -d "$input_folder" ]
+	then
+		#input folder does not exist
+		echo "Input folder does not exist."
+		cancel_unchanged
+	fi
+
+	# manage output folder
 	echo "Try to create output folder"
 	folder_created=$(mkdir -p "$output_folder")
 
