@@ -102,7 +102,6 @@ do
 		shift
 		;;
 	--recipient=*)
-		recipient=${recipient#*./}
 		recipient=${arg_i#*=}
 		;;
 	-i)
@@ -112,7 +111,6 @@ do
 		shift
 		;;
 	--input=*)
-		folder=${folder#*./}
 		folder=${arg_i#*=}
 		# remove / at end (if none exists, nothing happens)
 		folder=${folder%/}
