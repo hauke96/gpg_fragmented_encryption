@@ -41,7 +41,7 @@ END_USAGE
 function encrypt(){
 	input_file="$@"
 
-	file_with_gpg_ending="${input_file#*$input_folder}.gpg"
+	file_with_gpg_ending="${input_file#$input_folder}.gpg"
 	# remove leading / from path
 	file_with_gpg_ending=${file_with_gpg_ending#/}
 
