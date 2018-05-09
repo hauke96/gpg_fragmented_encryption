@@ -107,11 +107,15 @@ do
 		;;
 	-i)
 		folder=${arg_j#*./}
+		# remove / at end (if none exists, nothing happens)
+		folder=${folder%/}
 		shift
 		;;
 	--input=*)
 		folder=${folder#*./}
 		folder=${arg_i#*=}
+		# remove / at end (if none exists, nothing happens)
+		folder=${folder%/}
 		;;
 	-d|--decrypt)
 		encrypt_mode=decrypt
