@@ -135,13 +135,7 @@ done
 if [ -z $encrypt_mode ]
 then
 	cat <<END_USAGE
-Please specify endryption mode:
-
-	-e, --encrypt    Encrypt the given input folder and puts the encrypted
-					 files into the output folder. This command requires a
-					 specified recipient (s. below).
-	-d, --decrypt    Decrypts the given input folder and puts the decrypted
-					 files into the output folder.
+Missing encryption mode.
 
 Use '-h' or '--help' for more information.
 END_USAGE
