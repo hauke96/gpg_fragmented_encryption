@@ -4,7 +4,7 @@ set -e
 
 # Default settings
 recipient=
-folder=
+input_folder=
 output_folder=output_gpgfe
 
 # Internal variables
@@ -40,14 +40,19 @@ END_USAGE
 #    $1 - Filename to encrypt
 function encrypt(){
 	input_file="$@"
-	output_file="$output_folder/${input_file#*$folder}.gpg"
 
-	# actually the output-file without the file
-	# e.g.: /test/foo/bar.txt if the file, then /test/foo is the sub-folder
+	file_with_gpg_ending="${input_file#*$input_folder}.gpg"
+	# remove leading / from path
+	file_with_gpg_ending=${file_with_gpg_ending#/}
+
+	output_file="$output_folder/$file_with_gpg_ending"
+
+	# gets the path to the output_file
+	# e.g.: /test/foo/bar.txt is the file, then /test/foo is the sub-folder
 	output_sub_folder="${output_file%/*}"
 
-	echo $output_file
-	echo $input_file
+	echo "in : $input_file"
+	echo "out: $output_file"
 
 	mkdir -p "$output_sub_folder"
 	gpg --output "$output_file" --encrypt --recipient $recipient "$input_file" >/dev/null
@@ -61,7 +66,7 @@ function decrypt(){
 	# remove .gpg ending
 	file_without_gpg_ending=${input_file%.*}
 	# remove input-folder name which is the prefix
-	file_without_gpg_ending=${file_without_gpg_ending#$folder}
+	file_without_gpg_ending=${file_without_gpg_ending#$input_folder}
 	# remove / from beginning
 	file_without_gpg_ending=${file_without_gpg_ending#/}
 	
@@ -105,15 +110,15 @@ do
 		recipient=${arg_i#*=}
 		;;
 	-i)
-		folder=${arg_j#*./}
+		input_folder=${arg_j#*./}
 		# remove / at end (if none exists, nothing happens)
-		folder=${folder%/}
+		input_folder=${input_folder%/}
 		shift
 		;;
 	--input=*)
-		folder=${arg_i#*=}
+		input_folder=${arg_i#*=}
 		# remove / at end (if none exists, nothing happens)
-		folder=${folder%/}
+		input_folder=${input_folder%/}
 		;;
 	-d|--decrypt)
 		encrypt_mode=decrypt
@@ -146,9 +151,9 @@ fi
 echo "Recipient:         $recipient"
 if [ $encrypt_mode == "encrypt" ]
 then
-	echo "Folder to encrypt: $folder"
+	echo "Folder to encrypt: $input_folder"
 else
-	echo "Folder to decrypt: $folder"
+	echo "Folder to decrypt: $input_folder"
 fi
 echo "Output folder:     $output_folder"
 echo ""
@@ -163,9 +168,9 @@ then
 
 	if [ $encrypt_mode == "encrypt" ]
 	then
-		find $folder -type f | while read line; do encrypt $line; done
+		find $input_folder -type f | while read line; do encrypt $line; done
 	else
-		find $folder -type f | while read line; do decrypt $line; done
+		find $input_folder -type f | while read line; do decrypt $line; done
 	fi
 else
 	echo "Nothing as been done so far."
