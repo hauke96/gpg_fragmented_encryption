@@ -43,4 +43,12 @@ Options:
 | -i<br>--input    | Folder with files. This is used for de- and encryption |
 | -o<br>--output | Specify output folder. The default is `./output_gpgfe/` |
 
+# For developer
+## Understand the code
+The code uses basic bash and unix commands.
+
+Understanding all the string operations an parsing, the [tldp page about string manipulation](https://www.tldp.org/LDP/abs/html/string-manipulation.html) helped me a lot.
+
+## Contribute
 For bugs, feature requests or questions: [mail( )hauke-stieler.de](mailto:mail@hauke-stieler.de)
+
