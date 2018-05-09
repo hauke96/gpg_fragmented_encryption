@@ -17,6 +17,7 @@ function cancel_unchanged(){
 Execution stopped. For more information on the cause, look above this line.
 Don't worry, nothing as been done so far.
 END
+	exit 1
 }
 
 function usage(){
@@ -147,7 +148,6 @@ Missing encryption mode.
 Use '-h' or '--help' for more information.
 END
 	cancel_unchanged
-exit 1
 fi
 
 echo "Recipient:         $recipient"
