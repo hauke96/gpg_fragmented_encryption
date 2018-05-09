@@ -11,6 +11,14 @@ output_folder=output_gpgfe
 prog=${0##*/}
 encrypt_mode=
 
+function cancel_unchanged(){
+	cat <<END
+
+Execution stopped. For more information on the cause, look above this line.
+Don't worry, nothing as been done so far.
+END
+}
+
 function usage(){
 	cat <<END_USAGE
 Encrypts or decrypts all the files in a folder with GnuPG.
@@ -134,11 +142,11 @@ done
 
 if [ -z $encrypt_mode ]
 then
-	cat <<END_USAGE
+	cat <<END
 Missing encryption mode.
-
 Use '-h' or '--help' for more information.
-END_USAGE
+END
+	cancel_unchanged
 exit 1
 fi
 
@@ -158,14 +166,19 @@ read -n 1 -s ok # read just one char and don't echo it on the screen
 
 if [ $ok == "y" ]
 then
+	echo "Okay, let's go"
+	echo "Create output folder"
 	mkdir $output_folder
 
 	if [ $encrypt_mode == "encrypt" ]
 	then
+		echo "Start encrypting"
 		find $input_folder -type f | while read line; do encrypt $line; done
 	else
+		echo "Start decrypting"
 		find $input_folder -type f | while read line; do decrypt $line; done
 	fi
 else
-	echo "Nothing as been done so far."
+	echo "Okay, won't do anything"
+	cancel_unchanged
 fi
