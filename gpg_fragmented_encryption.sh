@@ -57,8 +57,15 @@ function encrypt(){
 #    $1 - Filename to decrypt
 function decrypt(){
 	input_file="$@"
+	prefix=${output_folder%/*}
+	# remove .gpg ending
 	file_without_gpg_ending=${input_file%.*}
-	output_file="$output_folder/${file_without_gpg_ending#*/}"
+	# remove input-folder name which is the prefix
+	file_without_gpg_ending=${file_without_gpg_ending#$folder}
+	# remove / from beginning
+	file_without_gpg_ending=${file_without_gpg_ending#/}
+	
+	output_file="$output_folder/$file_without_gpg_ending"
 
 	# actually the output-file without the file
 	# e.g.: /test/foo/bar.txt if the file, then /test/foo is the sub-folder
