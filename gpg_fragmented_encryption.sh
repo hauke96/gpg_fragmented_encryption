@@ -92,8 +92,10 @@ do
 		shift
 		;;
 	--output=*)
-		output_folder=${output_folder#*./}
+		# split at = char and remove the shortest match from beginning
 		output_folder=${arg_i#*=}
+		# remove / at end (if none exists, nothing happens)
+		output_folder=${output_folder%/}
 		;;
 	-r)
 		recipient=${arg_j#*./}
