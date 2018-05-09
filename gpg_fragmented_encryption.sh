@@ -179,16 +179,17 @@ then
 
 	# manage output folder
 	echo "Try to create output folder"
-	folder_created=$(mkdir -p "$output_folder")
 
-	if [ ! $folder_created ]
+	if [ -d "$output_folder" ]
 	then
-		echo "Creation of output folder failed"
+		# output folder exists, check if it's empty
 		if [ -n "$(ls -A $output_folder)" ]
 		then
 			echo "The output folder exists and is not empty. To not overwrite anything, existing non-empty folders are not allowed."
 			cancel_unchanged
 		fi
+	else
+		mkdir -p "$output_folder"
 	fi
 
 	if [ $encrypt_mode == "encrypt" ]
